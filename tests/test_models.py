@@ -1,13 +1,18 @@
 import pytest
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils import timezone
+
 from apps.events.models import Category, Event
+
+User = get_user_model()
+
 
 @pytest.mark.django_db
 def test_category_creation_and_str():
     category = Category.objects.create(name="Conference")
     assert category.name == "Conference"
     assert str(category) == "Conference"
+
 
 @pytest.mark.django_db
 def test_event_creation_and_str():
