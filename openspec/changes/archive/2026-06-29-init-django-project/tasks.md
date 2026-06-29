@@ -21,5 +21,5 @@
 - [x] 4.1 Create GitHub issues for this feature
 - [x] 4.2 Commit all changes to a new feature branch
 - [x] 4.3 Open a Pull Request referencing the issues
-- [ ] 4.4 Perform a code review using an alternative AI model and address feedback
-- [ ] 4.5 Archive the OpenSpec change and merge the feature branch
+- [x] 4.4 Perform a code review using an alternative AI model and address feedback
+- [x] 4.5 Archive the OpenSpec change and merge the feature branch
