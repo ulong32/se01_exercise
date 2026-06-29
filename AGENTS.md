@@ -2,20 +2,20 @@
 
 ## Project scope
 
-This is a Django app for managing customer orders and internal staff workflows.
+This is a Django web application for creating, browsing, searching, and managing local events.
 
 Main apps:
 
-- `apps/orders` — order lifecycle
-- `apps/accounts` — users and roles
-- `apps/api` — DRF endpoints
-- `apps/web` — staff-facing server-rendered UI
+- `apps/events` — event lifecycle, dynamic search, filtering, and pagination
+- `apps/users` — user registration, authentication, and authorization (user vs. admin)
+- `apps/api` — API endpoints for asynchronous UI updates (e.g., dynamic search)
+- `apps/web` — server-rendered UI and rich frontend components
 
 ## Important project conventions
 
 - Put business workflow logic in `services.py`, not in views or serializers.
 - Put reusable read/query logic in `selectors.py`.
-- Keep Celery tasks thin; they should call service functions.
+- Keep Celery tasks (if any) thin; they should call service functions.
 
 ## Commands
 
@@ -23,19 +23,21 @@ Main apps:
 - Run tests: `pytest`
 - Create migrations: `python manage.py makemigrations`
 - Apply migrations: `python manage.py migrate`
+- Environment & deps: Use `uv` (e.g., `uv sync`)
+- Linter/Formatter: `ruff check` / `ruff format`
 
 ## Things that are easy to break
 
-- API response shapes in `apps/api`
-- role/permission checks in `apps/accounts`
-- order status transitions in `apps/orders/services.py`
+- Event editing/deletion permissions (ensure only creators or admins can modify).
+- Dynamic search and filtering logic (date, category, location).
+- Pagination logic combined with filtering.
 
 ## Change coupling
 
 If you change:
 
 - a model → also check serializers, factories, and admin
-- order workflow → also check tasks and notifications
+- event models/fields → also check search filters, UI forms, and API responses
 - permissions → also check both web views and API endpoints
 
 ## Constraints
@@ -48,7 +50,7 @@ If you change:
 
 - Use `openspec/specs/*` as the canonical source for technical/runtime documentation.
 - For project-level conventions, examine the `context` section of `openspec/config.yaml`.
-- For system-specific tasks, read the relevant capability spec under `openspec/specs/<capability>/spec.md` (for example: `user-management`, `purchase-order`).
+- For system-specific tasks, read the relevant capability spec under `openspec/specs/<capability>/spec.md`.
 - Use `openspec/notes/*` as supplemental context only for non-normative ideas and backlog notes.
 - Keep technical/runtime truth in `openspec/specs/*`; promote accepted ideas from notes into specs.
 - Keep documentation up to date. If inconsistency between code and documentation is detected, report it to the user and suggest a fix.
@@ -58,6 +60,6 @@ If you change:
 
 Add or update tests for:
 
-- order status changes
-- permission changes
-- API response changes
+- event search and date/category/location filtering
+- permission changes (user vs. admin roles)
+- UI submit protection logic (prevent duplicate entries)
