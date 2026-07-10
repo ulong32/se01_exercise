@@ -2,7 +2,6 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, Http
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from .models import Event, Category
 
 User = get_user_model()
