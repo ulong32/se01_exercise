@@ -32,6 +32,7 @@ def event_detail(request, event_id):
         "creator": event.creator.username
     })
 
+# NOTE: CSRF is exempted only for this early stub endpoint; remove once real forms/auth are added.
 @csrf_exempt
 def event_create(request):
     if request.method == "POST":
