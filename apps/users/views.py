@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, authenticate, login, logout
-from django.http import HttpResponseBadRequest
+from django.views.decorators.http import require_POST
 
 User = get_user_model()
 
@@ -33,6 +33,7 @@ def login_view(request):
     else:
         return render(request, 'users/login.html')
 
+@require_POST
 def logout_view(request):
     logout(request)
     return redirect("/")

@@ -8,16 +8,19 @@
 <body>
     <header>
         <div style="float: left;">
-            <a href="/events/"><strong>Event Listings</strong></a>
+            <a href="{% url 'events:event_list' %}"><strong>Event Listings</strong></a>
         </div>
         <div style="float: right;">
             {% if user.is_authenticated %}
                 Welcome, {{ user.username }}! 
-                <a href="/events/create/">Create Event</a> | 
-                <a href="/users/logout/">Logout</a>
+                <a href="{% url 'events:event_create' %}">Create Event</a> | 
+                <form action="{% url 'users:logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; padding:0;">Logout</button>
+                </form>
             {% else %}
-                <a href="/users/login/">Login</a> | 
-                <a href="/users/register/">Register</a>
+                <a href="{% url 'users:login' %}">Login</a> | 
+                <a href="{% url 'users:register' %}">Register</a>
             {% endif %}
         </div>
         <div style="clear: both;"></div>

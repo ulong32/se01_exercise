@@ -4,13 +4,13 @@
 
 {% block content %}
     <h1>Events</h1>
-    <form method="GET" action="/events/">
+    <form method="GET" action="{% url 'events:event_list' %}">
         <input type="text" name="q" placeholder="Search events..." value="{{ request.GET.q }}">
         <button type="submit">Search</button>
     </form>
     <ul>
         {% for event in events %}
-            <li><a href="/events/{{ event.id }}/">{{ event.title }}</a> - {{ event.date }} at {{ event.location }}</li>
+            <li><a href="{% url 'events:event_detail' event_id=event.id %}">{{ event.title }}</a> - {{ event.date }} at {{ event.location }}</li>
         {% empty %}
             <li>No events available at this time.</li>
         {% endfor %}

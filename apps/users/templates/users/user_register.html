@@ -7,7 +7,7 @@
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
-    <form method="POST" action="/users/register/">
+    <form method="POST" action="{% url 'users:register' %}">
         {% csrf_token %}
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>

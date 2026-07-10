@@ -1,8 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
 from .models import Event, Category
 from django.utils.dateparse import parse_datetime
+from .services import create_event
 
 User = get_user_model()
 
@@ -22,6 +25,7 @@ def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     return render(request, 'events/event_detail.html', {'event': event})
 
+@login_required(login_url='/users/login/')
 def event_create(request):
     if request.method == "POST":
         title = request.POST.get("title")
@@ -32,9 +36,6 @@ def event_create(request):
 
         if not all([title, description, date_str, location, category_id]):
             return HttpResponseBadRequest("Missing required fields")
-
-        if not request.user.is_authenticated:
-            return HttpResponseBadRequest("You must be logged in to create an event.")
         
         creator = request.user
 
@@ -47,7 +48,7 @@ def event_create(request):
         if parsed_date is None:
             return HttpResponseBadRequest("Invalid date format; expected ISO 8601 datetime")
 
-        event = Event.objects.create(
+        event = create_event(
             title=title,
             description=description,
             date=parsed_date,
@@ -55,9 +56,7 @@ def event_create(request):
             category=category,
             creator=creator,
         )
-        return redirect(f"/events/{event.id}/")
+        return redirect('events:event_detail', event_id=event.id)
     else:
-        if not Category.objects.exists():
-            Category.objects.create(name="Default")
         categories = Category.objects.all()
         return render(request, 'events/event_create.html', {'categories': categories})
