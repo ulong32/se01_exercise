@@ -58,12 +58,13 @@ def test_event_detail_view_404(client):
 def test_event_create_view_get(client):
     response = client.get(reverse("events:event_create"))
     assert response.status_code == 200
-    assert b"placeholder" in response.content
+    assert b"Create Event" in response.content
 
 @pytest.mark.django_db
 def test_event_create_view_post_success(client, category):
     # Ensure there is a user to act as creator
-    User.objects.create_user(username="default_creator", password="password")
+    user = User.objects.create_user(username="default_creator", password="password")
+    client.force_login(user)
     
     data = {
         "title": "New Event",
