@@ -36,6 +36,20 @@ uv sync
 
 ```
 
+## URL API
+
+The application currently exposes the following simple view endpoints:
+
+| URL Pattern | Method | Description | Return Format |
+|---|---|---|---|
+| `/` | GET | Welcome page | Plain text (`HttpResponse`) |
+| `/events/` | GET | List all events | JSON (`JsonResponse`) |
+| `/events/<id>/` | GET | Event details | JSON (`JsonResponse`) |
+| `/events/create/` | GET | Show create form (stub) | Plain text (`HttpResponse`) |
+| `/events/create/` | POST | Create an event | Redirect to `/events/<id>/` |
+
+*Note: The create POST endpoint expects `title`, `description`, `date`, `location`, and `category_id` in the form data.*
+
 ## Database Schema
 
 The application relies on the following primary tables:

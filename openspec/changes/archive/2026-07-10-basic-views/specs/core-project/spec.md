@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Django Project Initialization
 The system SHALL have a valid Django project wrapper configured with URL routing that includes both the admin site and the events application URLs.
@@ -10,10 +10,3 @@ The system SHALL have a valid Django project wrapper configured with URL routing
 #### Scenario: Accessing app URLs
 - **WHEN** user navigates to any URL defined in the events app
 - **THEN** the request is routed correctly through `config/urls.py` to the events app URL configuration
-
-### Requirement: Event Application Setup
-The system SHALL have an app named `events` registered in the project's installed apps.
-
-#### Scenario: Running migrations
-- **WHEN** user runs `python manage.py makemigrations` and `migrate`
-- **THEN** it correctly creates the tables for the events app without errors
