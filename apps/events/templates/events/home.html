@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Event Listings{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the Event Listings Web Application!</h1>
+    <p>Find the best events happening around you, or create your own!</p>
+    
+    <div>
+        <a href="/events/">Browse Events</a>
+    </div>
+    {% if not user.is_authenticated %}
+    <div style="margin-top: 1em;">
+        <p>New here? <a href="/users/register/">Register an account</a> to start creating events.</p>
+    </div>
+    {% endif %}
+{% endblock %}

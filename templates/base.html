@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Event Listings{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div style="float: left;">
+            <a href="/events/"><strong>Event Listings</strong></a>
+        </div>
+        <div style="float: right;">
+            {% if user.is_authenticated %}
+                Welcome, {{ user.username }}! 
+                <a href="/events/create/">Create Event</a> | 
+                <a href="/users/logout/">Logout</a>
+            {% else %}
+                <a href="/users/login/">Login</a> | 
+                <a href="/users/register/">Register</a>
+            {% endif %}
+        </div>
+        <div style="clear: both;"></div>
+    </header>
+    <hr>
+
+    <div class="messages">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: blue;">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <hr>
+    <footer>
+        <p>&copy; 2026 Event Listings Application. All rights reserved.</p>
+    </footer>
+</body>
+</html>
