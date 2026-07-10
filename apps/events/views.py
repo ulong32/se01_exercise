@@ -48,8 +48,7 @@ def event_create(request):
         # Hard-coded creator for now
         creator = User.objects.first()
         if not creator:
-            # Fallback if no user exists
-            creator = User.objects.create_user(username="default_creator", password="password")
+            return HttpResponseBadRequest("No users exist; create a user before creating events.")
 
         category = get_object_or_404(Category, pk=category_id)
 
