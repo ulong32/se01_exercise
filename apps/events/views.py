@@ -53,13 +53,19 @@ def event_create(request):
 
         category = get_object_or_404(Category, pk=category_id)
 
+        from django.utils.dateparse import parse_datetime
+
+        parsed_date = parse_datetime(date_str)
+        if parsed_date is None:
+            return HttpResponseBadRequest("Invalid date format; expected ISO 8601 datetime")
+
         event = Event.objects.create(
             title=title,
             description=description,
-            date=date_str,
+            date=parsed_date,
             location=location,
             category=category,
-            creator=creator
+            creator=creator,
         )
         return HttpResponseRedirect(f"/events/{event.id}/")
     else:
