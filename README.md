@@ -43,7 +43,7 @@ The application currently exposes the following simple view endpoints:
 | URL Pattern | Method | Description | Return Format |
 |---|---|---|---|
 | `/` | GET | Welcome page | Plain text (`HttpResponse`) |
-| `/events/` | GET | List all events | JSON (`JsonResponse`) |
+| `/events/` | GET | List all events | JSON (`JsonResponse`) (plain text `HttpResponse` message when no events exist) |
 | `/events/<id>/` | GET | Event details | JSON (`JsonResponse`) |
 | `/events/create/` | GET | Show create form (stub) | Plain text (`HttpResponse`) |
 | `/events/create/` | POST | Create an event | Redirect to `/events/<id>/` |
