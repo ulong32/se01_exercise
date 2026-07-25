@@ -1,39 +1,31 @@
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
 from .models import Event, Category
+from django.utils.dateparse import parse_datetime
+from .services import create_event
 
 User = get_user_model()
 
 def home(request):
-    return HttpResponse("Welcome to the Event Listings Web Application!")
+    return render(request, 'events/home.html')
 
 def event_list(request):
-    events = Event.objects.all()
-    if not events.exists():
-        return HttpResponse("No events available at this time.")
+    query = request.GET.get('q', '')
+    if query:
+        events = Event.objects.filter(title__icontains=query)
+    else:
+        events = Event.objects.all()
     
-    event_data = [
-        {"id": event.id, "title": event.title, "date": str(event.date), "location": event.location}
-        for event in events
-    ]
-    return JsonResponse({"events": event_data})
+    return render(request, 'events/event_list.html', {'events': events})
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    return JsonResponse({
-        "id": event.id,
-        "title": event.title,
-        "description": event.description,
-        "date": str(event.date),
-        "location": event.location,
-        "category": event.category.name,
-        "creator": event.creator.username
-    })
+    return render(request, 'events/event_detail.html', {'event': event})
 
-# NOTE: CSRF is exempted only for this early stub endpoint; remove once real forms/auth are added.
-@csrf_exempt
+@login_required(login_url='/users/login/')
 def event_create(request):
     if request.method == "POST":
         title = request.POST.get("title")
@@ -44,21 +36,19 @@ def event_create(request):
 
         if not all([title, description, date_str, location, category_id]):
             return HttpResponseBadRequest("Missing required fields")
+        
+        creator = request.user
 
-        # Hard-coded creator for now
-        creator = User.objects.first()
-        if not creator:
-            return HttpResponseBadRequest("No users exist; create a user before creating events.")
-
-        category = get_object_or_404(Category, pk=category_id)
-
-        from django.utils.dateparse import parse_datetime
+        try:
+            category = Category.objects.get(pk=category_id)
+        except Category.DoesNotExist:
+            return HttpResponseBadRequest("Invalid category selected.")
 
         parsed_date = parse_datetime(date_str)
         if parsed_date is None:
             return HttpResponseBadRequest("Invalid date format; expected ISO 8601 datetime")
 
-        event = Event.objects.create(
+        event = create_event(
             title=title,
             description=description,
             date=parsed_date,
@@ -66,6 +56,7 @@ def event_create(request):
             category=category,
             creator=creator,
         )
-        return HttpResponseRedirect(f"/events/{event.id}/")
+        return redirect('events:event_detail', event_id=event.id)
     else:
-        return HttpResponse("Event creation form placeholder. Send POST request here to create an event.")
+        categories = Category.objects.all()
+        return render(request, 'events/event_create.html', {'categories': categories})

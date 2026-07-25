@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('events/', include('apps.events.urls', namespace='events')),
+    path('users/', include('apps.users.urls', namespace='users')),
 ]

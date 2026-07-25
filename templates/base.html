@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Event Listings{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div style="float: left;">
+            <a href="{% url 'events:event_list' %}"><strong>Event Listings</strong></a>
+        </div>
+        <div style="float: right;">
+            {% if user.is_authenticated %}
+                Welcome, {{ user.username }}! 
+                <a href="{% url 'events:event_create' %}">Create Event</a> | 
+                <form action="{% url 'users:logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; padding:0;">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}">Login</a> | 
+                <a href="{% url 'users:register' %}">Register</a>
+            {% endif %}
+        </div>
+        <div style="clear: both;"></div>
+    </header>
+    <hr>
+
+    <div class="messages">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: blue;">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <hr>
+    <footer>
+        <p>&copy; 2026 Event Listings Application. All rights reserved.</p>
+    </footer>
+</body>
+</html>

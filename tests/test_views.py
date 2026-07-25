@@ -56,14 +56,17 @@ def test_event_detail_view_404(client):
 
 @pytest.mark.django_db
 def test_event_create_view_get(client):
+    user = User.objects.create_user(username="get_test_user", password="password")
+    client.force_login(user)
     response = client.get(reverse("events:event_create"))
     assert response.status_code == 200
-    assert b"placeholder" in response.content
+    assert b"Create Event" in response.content
 
 @pytest.mark.django_db
 def test_event_create_view_post_success(client, category):
     # Ensure there is a user to act as creator
-    User.objects.create_user(username="default_creator", password="password")
+    user = User.objects.create_user(username="default_creator", password="password")
+    client.force_login(user)
     
     data = {
         "title": "New Event",
@@ -79,5 +82,20 @@ def test_event_create_view_post_success(client, category):
 
 @pytest.mark.django_db
 def test_event_create_view_post_missing_fields(client):
+    user = User.objects.create_user(username="missing_fields_creator", password="password")
+    client.force_login(user)
     response = client.post(reverse("events:event_create"), {})
     assert response.status_code == 400
+
+@pytest.mark.django_db
+def test_event_create_view_post_unauthenticated(client, category):
+    data = {
+        "title": "Unauth Event",
+        "description": "Desc",
+        "date": timezone.now().isoformat(),
+        "location": "Loc",
+        "category_id": category.id
+    }
+    response = client.post(reverse("events:event_create"), data)
+    assert response.status_code == 302
+    assert "users/login" in response.url
