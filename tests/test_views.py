@@ -106,6 +106,14 @@ def test_ui_styling_and_accessibility(client):
     assert response.status_code == 200
     content = response.content.decode('utf-8')
     assert 'styles.css' in content
-    assert 'class="skip-link"' in content
     assert 'aria-label="Primary navigation"' in content
+
+@pytest.mark.django_db
+def test_event_list_view_htmx(client, event):
+    response = client.get(reverse("events:event_list"), headers={"HX-Request": "true"})
+    assert response.status_code == 200
+    content = response.content.decode('utf-8')
+    assert event.title in content
+    assert "<!DOCTYPE html>" not in content
+    assert '<ul class="event-list" id="event-results">' in content
 

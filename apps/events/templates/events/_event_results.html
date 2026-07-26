@@ -1,0 +1,21 @@
+<ul class="event-list" id="event-results">
+    {% for event in events %}
+    <li>
+        <article class="event-item">
+            <div>
+                <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}">{{ event.title }}</a></h2>
+
+                <p>{{ event.description|truncatewords:20 }}</p>
+            </div>
+            <div class="event-meta">
+                <p class="event-date"><strong>Date:</strong> {{ event.date|date:"F j, Y, g:i a" }}</p>
+                <p class="event-location"><strong>Location:</strong> {{ event.location }}</p>
+            </div>
+        </article>
+    </li>
+    {% empty %}
+    <li class="empty-state">
+        <p>No events available at this time.</p>
+    </li>
+    {% endfor %}
+</ul>
