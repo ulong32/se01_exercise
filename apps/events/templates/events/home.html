@@ -3,15 +3,22 @@
 {% block title %}Home - Event Listings{% endblock %}
 
 {% block content %}
-    <h1>Welcome to the Event Listings Web Application!</h1>
-    <p>Find the best events happening around you, or create your own!</p>
-    
-    <div>
-        <a href="/events/">Browse Events</a>
+<section class="hero-section" aria-labelledby="hero-heading">
+    <h1 id="hero-heading" class="hero-title">Welcome to Event Listings!</h1>
+    <p class="hero-subtitle">Discover the best local events happening around you, or create and share your own with our
+        community.</p>
+
+    <div class="hero-actions">
+        <a href="{% url 'events:event_list' %}" class="btn btn-primary">Browse Events</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'events:event_create' %}" class="btn btn-secondary">Create Event</a>
+        {% endif %}
     </div>
+
     {% if not user.is_authenticated %}
-    <div style="margin-top: 1em;">
-        <p>New here? <a href="/users/register/">Register an account</a> to start creating events.</p>
+    <div class="register-prompt">
+        <p>New here? <a href="{% url 'users:register' %}">Register an account</a> to start creating events.</p>
     </div>
     {% endif %}
+</section>
 {% endblock %}

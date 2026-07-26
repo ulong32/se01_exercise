@@ -1,13 +1,42 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ event.title }}{% endblock %}
+{% block title %}{{ event.title }} - Event Listings{% endblock %}
 
 {% block content %}
-    <h1>{{ event.title }}</h1>
-    <p><strong>Description:</strong> {{ event.description }}</p>
-    <p><strong>Date:</strong> {{ event.date }}</p>
-    <p><strong>Location:</strong> {{ event.location }}</p>
-    <p><strong>Category:</strong> {{ event.category }}</p>
-    <p><strong>Creator:</strong> {{ event.creator }}</p>
-    <a href="/events/">Back to Events</a>
+    <article class="event-detail-card" aria-labelledby="event-title">
+        <header class="event-detail-header">
+            <h1 id="event-title">{{ event.title }}</h1>
+        </header>
+        
+        <dl class="event-detail-body">
+            <div class="detail-group">
+                <dt class="detail-label">Description</dt>
+                <dd class="detail-value">{{ event.description }}</dd>
+            </div>
+            
+            <div class="detail-group">
+                <dt class="detail-label">Date & Time</dt>
+                <dd class="detail-value">{{ event.date|date:"F j, Y, g:i a" }}</dd>
+            </div>
+            
+            <div class="detail-group">
+                <dt class="detail-label">Location</dt>
+                <dd class="detail-value">{{ event.location }}</dd>
+            </div>
+            
+            <div class="detail-group">
+                <dt class="detail-label">Category</dt>
+                <dd class="detail-value">{{ event.category }}</dd>
+            </div>
+            
+            <div class="detail-group">
+                <dt class="detail-label">Created By</dt>
+                <dd class="detail-value">{{ event.creator }}</dd>
+            </div>
+        </dl>
+        
+        <footer class="event-detail-footer">
+            <a href="{% url 'events:event_list' %}" class="btn btn-secondary">Back to Events</a>
+        </footer>
+    </article>
 {% endblock %}
