@@ -1,18 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Events{% endblock %}
+{% block title %}Events - Event Listings{% endblock %}
 
 {% block content %}
-    <h1>Events</h1>
-    <form method="GET" action="{% url 'events:event_list' %}">
-        <input type="text" name="q" placeholder="Search events..." value="{{ request.GET.q }}">
-        <button type="submit">Search</button>
+<section aria-labelledby="events-heading">
+    <h1 id="events-heading">Explore Events</h1>
+    <form method="GET" action="{% url 'events:event_list' %}" class="search-form" role="search">
+        <label for="search-input" class="form-label">Search:</label>
+        <input type="text" id="search-input" name="q" class="search-input" placeholder="Search events by title..."
+            value="{{ request.GET.q|default:'' }}">
+        <button type="submit" class="btn btn-primary">Search</button>
     </form>
-    <ul>
+
+    <ul class="event-list">
         {% for event in events %}
-            <li><a href="{% url 'events:event_detail' event_id=event.id %}">{{ event.title }}</a> - {{ event.date }} at {{ event.location }}</li>
+        <li>
+            <article class="event-item">
+                <div>
+                    <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}">{{ event.title }}</a></h2>
+
+                    <p>{{ event.description|truncatewords:20 }}</p>
+                </div>
+                <div class="event-meta">
+                    <p class="event-date"><strong>Date:</strong> {{ event.date|date:"F j, Y, g:i a" }}</p>
+                    <p class="event-location"><strong>Location:</strong> {{ event.location }}</p>
+                </div>
+            </article>
+        </li>
         {% empty %}
-            <li>No events available at this time.</li>
+        <li class="empty-state">
+            <p>No events available at this time.</p>
+        </li>
         {% endfor %}
     </ul>
+</section>
 {% endblock %}

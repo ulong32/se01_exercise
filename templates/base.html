@@ -1,49 +1,56 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Event Listings{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
-    <header>
-        <div style="float: left;">
-            <a href="{% url 'events:event_list' %}"><strong>Event Listings</strong></a>
-        </div>
-        <div style="float: right;">
-            {% if user.is_authenticated %}
-                Welcome, {{ user.username }}! 
-                <a href="{% url 'events:event_create' %}">Create Event</a> | 
-                <form action="{% url 'users:logout' %}" method="POST" style="display:inline;">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Primary navigation">
+            <div class="nav-brand">
+                <a href="{% url 'events:event_list' %}"><strong>Event Listings</strong></a>
+            </div>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                <span>Welcome, {{ user.username }}!</span>
+                <a href="{% url 'events:event_create' %}">Create Event</a> |
+                <form action="{% url 'users:logout' %}" method="POST" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; padding:0;">Logout</button>
+                    <button type="submit" class="btn-link">Logout</button>
                 </form>
-            {% else %}
-                <a href="{% url 'users:login' %}">Login</a> | 
+                {% else %}
+                <a href="{% url 'users:login' %}">Login</a> |
                 <a href="{% url 'users:register' %}">Register</a>
-            {% endif %}
-        </div>
-        <div style="clear: both;"></div>
+                {% endif %}
+            </div>
+        </nav>
     </header>
     <hr>
 
-    <div class="messages">
+    <div class="messages" role="status">
         {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: blue;">{{ message }}</li>
+        <ul class="messages-list">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
                 {% endfor %}
-            </ul>
+        </ul>
         {% endif %}
     </div>
 
-    <main>
+    <main id="main-content">
         {% block content %}{% endblock %}
     </main>
 
     <hr>
-    <footer>
+    <footer class="site-footer">
         <p>&copy; 2026 Event Listings Application. All rights reserved.</p>
     </footer>
 </body>
+
 </html>

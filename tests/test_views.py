@@ -99,3 +99,13 @@ def test_event_create_view_post_unauthenticated(client, category):
     response = client.post(reverse("events:event_create"), data)
     assert response.status_code == 302
     assert "users/login" in response.url
+
+@pytest.mark.django_db
+def test_ui_styling_and_accessibility(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    content = response.content.decode('utf-8')
+    assert 'styles.css' in content
+    assert 'class="skip-link"' in content
+    assert 'aria-label="Primary navigation"' in content
+
