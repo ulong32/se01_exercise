@@ -10,7 +10,7 @@ The system SHALL provide a home page view at the root URL (`/`) that returns a w
 - **THEN** the system returns an HTTP 200 response containing a welcome message rendered with semantic HTML and external CSS styling
 
 ### Requirement: Event List View
-The system SHALL provide an event list view that returns all events in the database. The template SHALL display events using semantic HTML (`<article>` or structured list items) with CSS classes for layout.
+The system SHALL provide an event list view that returns all events in the database. The template SHALL display events using semantic HTML (`<article>` or structured list items) with CSS classes for layout. The view SHALL detect HTMX requests via the `HX-Request` header and return only the event results partial template for HTMX requests, while returning the full page template for normal requests. The search input SHALL include HTMX attributes (`hx-get`, `hx-trigger`, `hx-target`) to enable dynamic partial-page updates.
 
 #### Scenario: Viewing the event list with events present
 - **WHEN** user sends a GET request to `/events/`
@@ -19,6 +19,10 @@ The system SHALL provide an event list view that returns all events in the datab
 #### Scenario: Viewing the event list with no events
 - **WHEN** user sends a GET request to `/events/` and no events exist
 - **THEN** the system returns an HTTP 200 response indicating that no events are available
+
+#### Scenario: HTMX search request returns partial HTML
+- **WHEN** user sends a GET request to `/events/` with the `HX-Request: true` header and a `q` query parameter
+- **THEN** the system returns an HTTP 200 response containing only the event results HTML fragment matching the search query
 
 ### Requirement: Event Detail View
 The system SHALL provide an event detail view that returns the full details of a single event by its ID. The template SHALL use a definition list or structured semantic markup for event attributes.

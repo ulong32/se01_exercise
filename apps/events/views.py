@@ -19,6 +19,8 @@ def event_list(request):
     else:
         events = Event.objects.all()
     
+    if request.headers.get('HX-Request'):
+        return render(request, 'events/_event_results.html', {'events': events})
     return render(request, 'events/event_list.html', {'events': events})
 
 def event_detail(request, event_id):

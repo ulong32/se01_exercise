@@ -535,6 +535,11 @@ textarea.form-control {
     box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
 }
 
+.htmx-request {
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
 /* Hero Section (Home Page) */
 .hero-section {
     text-align: center;
