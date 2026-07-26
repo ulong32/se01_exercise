@@ -6,15 +6,73 @@
 <section aria-labelledby="events-heading">
     <h1 id="events-heading">Explore Events</h1>
     <form method="GET" action="{% url 'events:event_list' %}" class="search-form" role="search">
-        <label for="search-input" class="form-label">Search:</label>
-        <input type="text" id="search-input" name="q" class="search-input" placeholder="Search events by title..."
-            value="{{ request.GET.q|default:'' }}"
-            hx-get="{% url 'events:event_list' %}"
-            hx-trigger="input changed delay:300ms, search"
-            hx-target="#event-results"
-            hx-indicator="#event-results"
-            hx-swap="outerHTML">
-        <button type="submit" class="btn btn-primary">Search</button>
+        <div class="form-group">
+            <label for="search-input" class="form-label">Search by Title:</label>
+            <input type="text" id="search-input" name="q" class="form-control" placeholder="Search events by title..."
+                value="{{ q|default:'' }}"
+                hx-get="{% url 'events:event_list' %}"
+                hx-trigger="input changed delay:300ms, search"
+                hx-target="#event-results"
+                hx-indicator="#event-results"
+                hx-swap="outerHTML"
+                hx-include="closest form">
+        </div>
+
+        <div class="form-group">
+            <label for="category-select" class="form-label">Category:</label>
+            <select id="category-select" name="category" class="form-control"
+                hx-get="{% url 'events:event_list' %}"
+                hx-trigger="change"
+                hx-target="#event-results"
+                hx-indicator="#event-results"
+                hx-swap="outerHTML"
+                hx-include="closest form">
+                <option value="">All categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == category|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="date-from-input" class="form-label">Date From:</label>
+            <input type="date" id="date-from-input" name="date_from" class="form-control"
+                value="{{ date_from|default:'' }}"
+                hx-get="{% url 'events:event_list' %}"
+                hx-trigger="change"
+                hx-target="#event-results"
+                hx-indicator="#event-results"
+                hx-swap="outerHTML"
+                hx-include="closest form">
+        </div>
+
+        <div class="form-group">
+            <label for="date-to-input" class="form-label">Date To:</label>
+            <input type="date" id="date-to-input" name="date_to" class="form-control"
+                value="{{ date_to|default:'' }}"
+                hx-get="{% url 'events:event_list' %}"
+                hx-trigger="change"
+                hx-target="#event-results"
+                hx-indicator="#event-results"
+                hx-swap="outerHTML"
+                hx-include="closest form">
+        </div>
+
+        <div class="form-group">
+            <label for="location-input" class="form-label">Location:</label>
+            <input type="text" id="location-input" name="location" class="form-control" placeholder="Filter by location..."
+                value="{{ location|default:'' }}"
+                hx-get="{% url 'events:event_list' %}"
+                hx-trigger="input changed delay:300ms, search"
+                hx-target="#event-results"
+                hx-indicator="#event-results"
+                hx-swap="outerHTML"
+                hx-include="closest form">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
     </form>
 
     {% include 'events/_event_results.html' %}
