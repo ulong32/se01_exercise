@@ -1,16 +1,4 @@
-# htmx-dynamic-search Specification
-
-## Purpose
-Defines requirements for HTMX-driven dynamic partial updates and search interactivity.
-
-## Requirements
-
-### Requirement: HTMX Library Inclusion
-The system SHALL include the HTMX JavaScript library in the base template so that HTMX attributes are available on all pages. The library MUST be loaded from a CDN via a `<script>` tag.
-
-#### Scenario: HTMX is available on any page
-- **WHEN** a user loads any page of the application
-- **THEN** the HTMX library is loaded and HTMX attributes on HTML elements are functional
+## MODIFIED Requirements
 
 ### Requirement: Dynamic Event Search via HTMX
 The system SHALL provide a dynamic multi-criteria filtering interaction on the event list page. The page SHALL include filter controls for title keyword search, category selection, date range (from/to), and location keyword search. Changing any filter criterion SHALL trigger a partial page update of the event results via HTMX without a full-page reload. All filter inputs SHALL be enclosed in a single `<form>` element, and each input SHALL use `hx-get` to send a GET request to the event list URL with `hx-include="closest form"` to include all current filter values. Text inputs (title search, location) SHALL use `hx-trigger="input changed delay:300ms, search"` for debounced updates. Discrete inputs (category dropdown, date pickers) SHALL use `hx-trigger="change"` for immediate updates. All inputs SHALL use `hx-target="#event-results"` and `hx-swap="outerHTML"` to replace only the event results container.
@@ -57,25 +45,3 @@ The system SHALL render filter controls on the event list page consisting of: a 
 #### Scenario: Filter values persist on full page load
 - **WHEN** a user submits filters via standard GET (non-HTMX) and the page reloads
 - **THEN** the filter controls retain the submitted values via the template context
-
-### Requirement: Partial HTML Response for HTMX Requests
-The system SHALL detect HTMX requests by checking for the `HX-Request` HTTP header. When the header is present, the event list view MUST return only the event results HTML fragment (partial template). When the header is absent, the view MUST return the full page as before.
-
-#### Scenario: HTMX request receives partial HTML
-- **WHEN** the event list view receives a GET request with the `HX-Request: true` header
-- **THEN** the system returns an HTTP 200 response containing only the event results HTML fragment (no `<html>`, `<head>`, `<body>`, header, or footer markup)
-
-#### Scenario: Normal request receives full page
-- **WHEN** the event list view receives a GET request without the `HX-Request` header
-- **THEN** the system returns the full HTML page including layout, header, and footer
-
-### Requirement: Event Results Partial Template
-The system SHALL provide a partial template (`_event_results.html`) containing only the event results list markup. The main event list template MUST use `{% include %}` to render this partial, ensuring the full-page and HTMX responses share the same HTML fragment.
-
-#### Scenario: Partial template renders event cards
-- **WHEN** the partial template is rendered with a list of events
-- **THEN** it produces an HTML `<ul>` element with class `event-list` containing one `<li>` per event with title, description excerpt, date, and location
-
-#### Scenario: Partial template renders empty state
-- **WHEN** the partial template is rendered with no events
-- **THEN** it produces an HTML `<ul>` element containing a single `<li>` with an empty-state message
