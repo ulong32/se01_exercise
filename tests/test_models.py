@@ -24,7 +24,7 @@ def test_event_creation_and_str():
         date=timezone.now(),
         location="Tokyo",
         category=category,
-        creator=user
+        creator=user,
     )
     assert event.title == "Django Meetup"
     assert event.location == "Tokyo"

@@ -250,10 +250,14 @@ hr {
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 1rem;
+    font-family: inherit;
+    line-height: 1.5;
+    box-sizing: border-box;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     transition: all var(--transition-fast);
     text-align: center;
+    text-decoration: none;
     width: 100%;
 }
 
@@ -289,6 +293,30 @@ hr {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.25);
     color: #ffffff !important;
+}
+
+.btn-error, .btn-danger {
+    background: var(--error);
+    color: #ffffff !important;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+}
+
+.btn-error:hover, .btn-danger:hover {
+    background: #e11d48;
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.4);
+    color: #ffffff !important;
+}
+
+.btn-error:active, .btn-danger:active {
+    transform: translateY(0);
+}
+
+.inline-form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
 }
 
 .form-container {
@@ -372,6 +400,8 @@ textarea.form-control {
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    position: relative;
+    cursor: pointer;
 }
 
 .event-item:hover {
@@ -391,8 +421,19 @@ textarea.form-control {
     transition: color var(--transition-fast);
 }
 
+.event-item:hover .event-card-title a,
 .event-card-title a:hover {
     color: #818cf8;
+}
+
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    content: "";
 }
 
 .event-meta {
@@ -463,6 +504,25 @@ textarea.form-control {
     font-size: 1.1rem;
     color: var(--text-primary);
     font-weight: 500;
+}
+
+.event-detail-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.event-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+    flex-wrap: wrap;
 }
 
 /* 5.5 Alert & Flash Messages */

@@ -10,6 +10,14 @@ A web application that allows users to create, browse, search, and manage local 
 * Browsing & Pagination: Paginated event lists with past events hidden or visually grayed out.
 * Rich UI: Asynchronous dynamic search updates without page reloads, visual calendar widgets, and submit protection to prevent duplicate entries.
 
+## Unimplemented Features (未実装の機能)
+
+While listed in the overview above, the following advanced capabilities are currently out of scope and **not yet implemented** in the codebase:
+* **Advanced Filtering**: Filtering events by date, category, and location (currently, only title substring search is implemented).
+* **Pagination & Past Events**: Paginated event lists and hiding/graying out past events.
+* **Rich UI Elements**: Visual calendar widgets and submit protection against duplicate form submissions.
+* **Saved Events**: The optional `favorites` junction table and user bookmarks functionality.
+
 ## Development Environment
 
 * Language: Python 3.12.3
@@ -47,8 +55,11 @@ The application currently exposes the following simple view endpoints:
 | `/events/<id>/` | GET | Event details | JSON (`JsonResponse`) |
 | `/events/create/` | GET | Show create form (stub) | Plain text (`HttpResponse`) |
 | `/events/create/` | POST | Create an event | Redirect to `/events/<id>/` |
+| `/events/<id>/edit/` | GET | Show edit form | HTML (`HttpResponse`) |
+| `/events/<id>/edit/` | POST | Update an event | Redirect to `/events/<id>/` |
+| `/events/<id>/delete/` | POST | Delete an event | Redirect to `/events/` |
 
-*Note: The create POST endpoint expects `title`, `description`, `date`, `location`, and `category_id` in the form data.*
+*Note: The create and edit POST endpoints expect `title`, `description`, `date`, `location`, and `category_id` in the form data.*
 
 ## Database Schema
 
