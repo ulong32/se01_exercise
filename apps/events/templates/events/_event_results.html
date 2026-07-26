@@ -3,7 +3,7 @@
     <li>
         <article class="event-item">
             <div>
-                <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}">{{ event.title }}</a></h2>
+                <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}" class="stretched-link">{{ event.title }}</a></h2>
 
                 <p>{{ event.description|truncatewords:20 }}</p>
             </div>
