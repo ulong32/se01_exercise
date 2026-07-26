@@ -12,6 +12,7 @@
             hx-get="{% url 'events:event_list' %}"
             hx-trigger="input changed delay:300ms, search"
             hx-target="#event-results"
+            hx-indicator="#event-results"
             hx-swap="outerHTML">
         <button type="submit" class="btn btn-primary">Search</button>
     </form>

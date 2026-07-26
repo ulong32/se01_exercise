@@ -106,6 +106,7 @@ def test_ui_styling_and_accessibility(client):
     assert response.status_code == 200
     content = response.content.decode('utf-8')
     assert 'styles.css' in content
+    assert 'class="skip-link"' in content
     assert 'aria-label="Primary navigation"' in content
 
 @pytest.mark.django_db
