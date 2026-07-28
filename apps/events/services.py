@@ -1,4 +1,4 @@
-from .models import Event
+from .models import Event, Favorite
 
 
 def create_event(
@@ -27,3 +27,14 @@ def update_event(event: Event, **kwargs) -> Event:
 def delete_event(event: Event) -> None:
     """Deletes an Event record from the database."""
     event.delete()
+
+
+def toggle_favorite(user, event: Event) -> bool:
+    """Toggles favorite status for a user and event.
+    Returns True if favorited, False if unfavorited.
+    """
+    favorite, created = Favorite.objects.get_or_create(user=user, event=event)
+    if not created:
+        favorite.delete()
+        return False
+    return True

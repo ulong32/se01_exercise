@@ -1,14 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import (
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
 from .models import Category, Event
-from .selectors import get_events
-from .services import create_event, delete_event, update_event
+from .selectors import get_events, get_favorited_event_ids, get_user_favorites
+from .services import create_event, delete_event, toggle_favorite, update_event
 
 User = get_user_model()
 
@@ -64,12 +68,18 @@ def event_list(request):
         page_obj = paginator.page(1)
 
     now = timezone.now()
+    favorited_ids = get_favorited_event_ids(request.user)
 
     if request.headers.get("HX-Request"):
         return render(
             request,
             "events/_event_results.html",
-            {"events": page_obj, "page_obj": page_obj, "now": now},
+            {
+                "events": page_obj,
+                "page_obj": page_obj,
+                "now": now,
+                "favorited_ids": favorited_ids,
+            },
         )
 
     categories = Category.objects.all()
@@ -85,13 +95,23 @@ def event_list(request):
         "location": location,
         "include_past": include_past_str,
         "now": now,
+        "favorited_ids": favorited_ids,
     }
     return render(request, "events/event_list.html", context)
 
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    return render(request, "events/event_detail.html", {"event": event})
+    is_favorited = (
+        event.id in get_favorited_event_ids(request.user)
+        if request.user.is_authenticated
+        else False
+    )
+    return render(
+        request,
+        "events/event_detail.html",
+        {"event": event, "is_favorited": is_favorited},
+    )
 
 
 @login_required(login_url="/users/login/")
@@ -197,3 +217,28 @@ def event_delete(request, event_id):
         return redirect("events:event_list")
     else:
         return HttpResponseBadRequest("Only POST requests are allowed for deletion.")
+
+
+@login_required(login_url="/users/login/")
+def event_toggle_favorite(request, event_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    event = get_object_or_404(Event, pk=event_id)
+    is_favorited = toggle_favorite(request.user, event)
+    return render(
+        request,
+        "events/_favorite_button.html",
+        {"event": event, "is_favorited": is_favorited},
+    )
+
+
+@login_required(login_url="/users/login/")
+def event_saved(request):
+    events = get_user_favorites(request.user)
+    favorited_ids = get_favorited_event_ids(request.user)
+    now = timezone.now()
+    return render(
+        request,
+        "events/event_saved.html",
+        {"events": events, "favorited_ids": favorited_ids, "now": now},
+    )

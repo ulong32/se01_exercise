@@ -20,6 +20,7 @@
                 {% if user.is_authenticated %}
                 <span>Welcome, {{ user.username }}!</span>
                 <a href="{% url 'events:event_create' %}">Create Event</a> |
+                <a href="{% url 'events:event_saved' %}">Saved Events</a> |
                 <form action="{% url 'users:logout' %}" method="POST" class="inline-form">
                     {% csrf_token %}
                     <button type="submit" class="btn-link">Logout</button>

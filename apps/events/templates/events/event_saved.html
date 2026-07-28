@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Saved Events - Event Listings{% endblock %}
+
+{% block content %}
+<section aria-labelledby="saved-events-heading">
+    <h1 id="saved-events-heading">Saved Events</h1>
+    <div id="event-results">
+        <ul class="event-list">
+            {% for event in events %}
+            <li>
+                <article class="event-item{% if event.date < now %} past-event{% endif %}">
+                    <div class="event-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}" class="stretched-link">{{ event.title }}</a></h2>
+                        {% if request.user.is_authenticated %}
+                            {% include "events/_favorite_button.html" with is_favorited=True %}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p>{{ event.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="event-meta">
+                        <p class="event-date"><strong>Date:</strong> {{ event.date|date:"F j, Y, g:i a" }}</p>
+                        <p class="event-location"><strong>Location:</strong> {{ event.location }}</p>
+                    </div>
+                </article>
+            </li>
+            {% empty %}
+            <li class="empty-state">
+                <p>You have no saved events yet.</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}

@@ -4,8 +4,11 @@
 
 {% block content %}
     <article class="event-detail-card" aria-labelledby="event-title">
-        <header class="event-detail-header">
+        <header class="event-detail-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h1 id="event-title">{{ event.title }}</h1>
+            {% if request.user.is_authenticated %}
+                {% include "events/_favorite_button.html" %}
+            {% endif %}
         </header>
         
         <dl class="event-detail-body">

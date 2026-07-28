@@ -705,3 +705,26 @@ textarea.form-control {
     background: transparent;
     border-color: rgba(255, 255, 255, 0.05);
 }
+
+/* Favorite Toggle Button */
+.favorite-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary, #a0aec0);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+    position: relative;
+    z-index: 2;
+    line-height: 1;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.2);
+    color: #f56565;
+}
+
+.favorite-btn.is-favorited {
+    color: #e53e3e;
+}
