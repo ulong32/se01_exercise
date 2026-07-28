@@ -1,21 +1,62 @@
-<ul class="event-list" id="event-results">
-    {% for event in events %}
-    <li>
-        <article class="event-item">
-            <div>
-                <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}" class="stretched-link">{{ event.title }}</a></h2>
+<div id="event-results">
+    <ul class="event-list">
+        {% for event in page_obj %}
+        <li>
+            <article class="event-item{% if event.date < now %} past-event{% endif %}">
+                <div>
+                    <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}" class="stretched-link">{{ event.title }}</a></h2>
 
-                <p>{{ event.description|truncatewords:20 }}</p>
-            </div>
-            <div class="event-meta">
-                <p class="event-date"><strong>Date:</strong> {{ event.date|date:"F j, Y, g:i a" }}</p>
-                <p class="event-location"><strong>Location:</strong> {{ event.location }}</p>
-            </div>
-        </article>
-    </li>
-    {% empty %}
-    <li class="empty-state">
-        <p>No events available at this time.</p>
-    </li>
-    {% endfor %}
-</ul>
+                    <p>{{ event.description|truncatewords:20 }}</p>
+                </div>
+                <div class="event-meta">
+                    <p class="event-date"><strong>Date:</strong> {{ event.date|date:"F j, Y, g:i a" }}</p>
+                    <p class="event-location"><strong>Location:</strong> {{ event.location }}</p>
+                </div>
+            </article>
+        </li>
+        {% empty %}
+        <li class="empty-state">
+            <p>No events available at this time.</p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if include_past %}&include_past={{ include_past }}{% endif %}"
+           class="pagination-link"
+           hx-get="{% url 'events:event_list' %}?page={{ page_obj.previous_page_number }}"
+           hx-target="#event-results"
+           hx-swap="outerHTML"
+           hx-include=".search-form">&laquo; Previous</a>
+        {% else %}
+        <span class="pagination-link disabled">&laquo; Previous</span>
+        {% endif %}
+
+        {% for p in page_obj.paginator.page_range %}
+            {% if page_obj.number == p %}
+            <span class="pagination-link active">{{ p }}</span>
+            {% else %}
+            <a href="?page={{ p }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if include_past %}&include_past={{ include_past }}{% endif %}"
+               class="pagination-link"
+               hx-get="{% url 'events:event_list' %}?page={{ p }}"
+               hx-target="#event-results"
+               hx-swap="outerHTML"
+               hx-include=".search-form">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if include_past %}&include_past={{ include_past }}{% endif %}"
+           class="pagination-link"
+           hx-get="{% url 'events:event_list' %}?page={{ page_obj.next_page_number }}"
+           hx-target="#event-results"
+           hx-swap="outerHTML"
+           hx-include=".search-form">Next &raquo;</a>
+        {% else %}
+        <span class="pagination-link disabled">Next &raquo;</span>
+        {% endif %}
+    </nav>
+    {% endif %}
+</div>

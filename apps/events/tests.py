@@ -38,7 +38,7 @@ def event(creator, category):
     return Event.objects.create(
         title="Original Event",
         description="Original Description",
-        date=timezone.now(),
+        date=timezone.now() + timedelta(days=1),
         location="Original Location",
         category=category,
         creator=creator,
@@ -144,7 +144,7 @@ def multiple_events(creator, category, second_category):
     e1 = Event.objects.create(
         title="Django Workshop",
         description="Learn Django basics",
-        date=now,
+        date=now + timedelta(days=1),
         location="Tokyo Shibuya",
         category=category,
         creator=creator,
@@ -249,3 +249,129 @@ def test_event_list_view_htmx_partial(client, multiple_events):
     assert b"<html" not in response.content
     assert b"Django Workshop" in response.content
     assert b"Python Meetup" not in response.content
+
+
+@pytest.fixture
+def past_event(creator, category):
+    return Event.objects.create(
+        title="Past Event Title",
+        description="Happened yesterday",
+        date=timezone.now() - timedelta(days=1),
+        location="Old Location",
+        category=category,
+        creator=creator,
+    )
+
+
+@pytest.fixture
+def many_events(creator, category):
+    events = []
+    now = timezone.now()
+    for i in range(15):
+        events.append(
+            Event.objects.create(
+                title=f"Paginated Event {i:02d}",
+                description="Test pagination",
+                date=now + timedelta(days=i + 1),
+                location="Tokyo",
+                category=category,
+                creator=creator,
+            )
+        )
+    return events
+
+
+@pytest.mark.django_db
+def test_get_events_exclude_past(event, past_event):
+    res_default = get_events()
+    assert event in res_default
+    assert past_event not in res_default
+
+    res_false = get_events(include_past=False)
+    assert event in res_false
+    assert past_event not in res_false
+
+
+@pytest.mark.django_db
+def test_get_events_include_past(event, past_event):
+    res_true = get_events(include_past=True)
+    assert event in res_true
+    assert past_event in res_true
+
+
+@pytest.mark.django_db
+def test_event_list_exclude_and_include_past(client, event, past_event):
+    res_default = client.get(reverse("events:event_list"))
+    assert res_default.status_code == 200
+    assert b"Original Event" in res_default.content
+    assert b"Past Event Title" not in res_default.content
+
+    res_include = client.get(reverse("events:event_list"), {"include_past": "true"})
+    assert res_include.status_code == 200
+    assert b"Original Event" in res_include.content
+    assert b"Past Event Title" in res_include.content
+    assert b"past-event" in res_include.content
+
+
+@pytest.mark.django_db
+def test_pagination_pages(client, many_events):
+    res_page1 = client.get(reverse("events:event_list"))
+    assert res_page1.status_code == 200
+    assert len(res_page1.context["page_obj"]) == 12
+    assert res_page1.context["page_obj"].number == 1
+    assert b"Paginated Event 00" in res_page1.content
+    assert b"Paginated Event 11" in res_page1.content
+    assert b"Paginated Event 12" not in res_page1.content
+
+    res_page2 = client.get(reverse("events:event_list"), {"page": "2"})
+    assert res_page2.status_code == 200
+    assert len(res_page2.context["page_obj"]) == 3
+    assert res_page2.context["page_obj"].number == 2
+    assert b"Paginated Event 12" in res_page2.content
+    assert b"Paginated Event 14" in res_page2.content
+    assert b"Paginated Event 00" not in res_page2.content
+
+
+@pytest.mark.django_db
+def test_pagination_invalid_page(client, many_events):
+    for invalid_page in ["999", "abc", "-1"]:
+        res = client.get(reverse("events:event_list"), {"page": invalid_page})
+        assert res.status_code == 200
+        assert res.context["page_obj"].number == 1
+        assert len(res.context["page_obj"]) == 12
+
+
+@pytest.mark.django_db
+def test_pagination_with_filters(client, many_events, second_category, creator):
+    now = timezone.now()
+    Event.objects.create(
+        title="Other Category Event 01",
+        description="Different category",
+        date=now + timedelta(days=2),
+        location="Tokyo",
+        category=second_category,
+        creator=creator,
+    )
+    res = client.get(
+        reverse("events:event_list"),
+        {"category": many_events[0].category.id, "page": "2"},
+    )
+    assert res.status_code == 200
+    assert len(res.context["page_obj"]) == 3
+    for ev in res.context["page_obj"]:
+        assert ev.category == many_events[0].category
+
+
+@pytest.mark.django_db
+def test_pagination_htmx(client, many_events):
+    res = client.get(
+        reverse("events:event_list"),
+        {"page": "2"},
+        HTTP_HX_REQUEST="true",
+    )
+    assert res.status_code == 200
+    assert b"event-results" in res.content
+    assert b"<html" not in res.content
+    assert b"Paginated Event 12" in res.content
+    assert b"pagination" in res.content
+    assert b"&laquo; Previous" in res.content

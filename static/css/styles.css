@@ -410,6 +410,17 @@ textarea.form-control {
     border-color: rgba(129, 140, 248, 0.4);
 }
 
+.event-item.past-event {
+    opacity: 0.6;
+    filter: grayscale(60%);
+}
+
+.event-item.past-event:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-color);
+}
+
 .event-card-title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -645,4 +656,52 @@ textarea.form-control {
     padding-top: 2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--text-secondary);
+}
+
+/* --- 5.7 Pagination Navigation --- */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.pagination-link:hover:not(.disabled):not(.active) {
+    background: var(--bg-secondary);
+    border-color: #818cf8;
+    color: #818cf8;
+}
+
+.pagination-link.active {
+    background: var(--accent-gradient);
+    border-color: transparent;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.pagination-link.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.05);
 }

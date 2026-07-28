@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
 from .models import Category, Event
@@ -21,6 +23,8 @@ def event_list(request):
     date_from_str = request.GET.get("date_from", "")
     date_to_str = request.GET.get("date_to", "")
     location = request.GET.get("location", "")
+    include_past_str = request.GET.get("include_past", "")
+    include_past = include_past_str.lower() == "true"
 
     category_id = None
     if category_str:
@@ -49,14 +53,29 @@ def event_list(request):
         date_from=date_from,
         date_to=date_to,
         location=location if location else None,
-    )
+        include_past=include_past,
+    ).order_by("date")
+
+    paginator = Paginator(events, 12)
+    page_number = request.GET.get("page", 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage, ValueError):
+        page_obj = paginator.page(1)
+
+    now = timezone.now()
 
     if request.headers.get("HX-Request"):
-        return render(request, "events/_event_results.html", {"events": events})
+        return render(
+            request,
+            "events/_event_results.html",
+            {"events": page_obj, "page_obj": page_obj, "now": now},
+        )
 
     categories = Category.objects.all()
     context = {
-        "events": events,
+        "events": page_obj,
+        "page_obj": page_obj,
         "categories": categories,
         "q": query,
         "category": category_str,
@@ -64,6 +83,8 @@ def event_list(request):
         "date_from": date_from_str,
         "date_to": date_to_str,
         "location": location,
+        "include_past": include_past_str,
+        "now": now,
     }
     return render(request, "events/event_list.html", context)
 

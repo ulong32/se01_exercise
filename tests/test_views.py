@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -23,7 +25,7 @@ def event(user, category):
     return Event.objects.create(
         title="Test Event",
         description="Test Description",
-        date=timezone.now(),
+        date=timezone.now() + timedelta(days=1),
         location="Test Location",
         category=category,
         creator=user,
@@ -133,4 +135,5 @@ def test_event_list_view_htmx(client, event):
     content = response.content.decode("utf-8")
     assert event.title in content
     assert "<!DOCTYPE html>" not in content
-    assert '<ul class="event-list" id="event-results">' in content
+    assert '<div id="event-results">' in content
+    assert '<ul class="event-list">' in content

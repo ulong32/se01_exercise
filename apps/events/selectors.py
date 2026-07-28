@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.db.models import QuerySet
+from django.utils import timezone
 
 from .models import Event
 
@@ -12,9 +13,13 @@ def get_events(
     date_from: date | None = None,
     date_to: date | None = None,
     location: str | None = None,
+    include_past: bool = False,
 ) -> QuerySet[Event]:
     """Retrieves a filtered QuerySet of Event objects based on criteria."""
     events = Event.objects.all()
+
+    if not include_past:
+        events = events.filter(date__gte=timezone.now())
 
     if query:
         events = events.filter(title__icontains=query)
