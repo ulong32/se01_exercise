@@ -89,4 +89,19 @@
 
     {% include 'events/_event_results.html' %}
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof flatpickr !== "undefined") {
+            var fpConfig = {
+                enableTime: false,
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    instance.element.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            };
+            flatpickr("#date-from-input", fpConfig);
+            flatpickr("#date-to-input", fpConfig);
+        }
+    });
+</script>
 {% endblock %}

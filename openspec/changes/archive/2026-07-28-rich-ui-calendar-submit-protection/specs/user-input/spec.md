@@ -1,9 +1,4 @@
-# User Input Constraints
-
-## Purpose
-Defines constraints and patterns for handling user input via HTML forms, including validation, CSRF protection, and Post-Redirect-Get.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: User Input Forms
 The system SHALL provide HTML forms for users to input data. Forms that retrieve or filter data MUST use the GET method, while forms that mutate state (create, update, delete) MUST use the POST method. All state-mutating forms MUST include the `data-submit-protect` attribute to enable frontend submit protection.
@@ -20,30 +15,7 @@ The system SHALL provide HTML forms for users to input data. Forms that retrieve
 - **WHEN** reviewing any state-mutating form template (event create, event edit)
 - **THEN** the `<form>` element includes the `data-submit-protect` attribute
 
-### Requirement: Form Validation
-The system SHALL validate submitted form data before processing. Required fields MUST be checked for presence. If validation fails, the system MUST return a 400 Bad Request or re-render the form indicating errors.
-
-#### Scenario: Valid form submission
-- **WHEN** user submits a POST form with all required fields present
-- **THEN** the server processes the data successfully
-
-#### Scenario: Invalid form submission
-- **WHEN** user submits a POST form missing a required field
-- **THEN** the server rejects the submission and returns a 400 response or error page
-
-### Requirement: CSRF Protection
-The system SHALL protect all POST forms from Cross-Site Request Forgery by including a CSRF token.
-
-#### Scenario: Submitting POST without CSRF token
-- **WHEN** user submits a POST request without a valid CSRF token
-- **THEN** the system returns a 403 Forbidden response
-
-### Requirement: Post-Redirect-Get (PRG) Pattern
-The system SHALL redirect the user to a success page or another appropriate GET endpoint after successfully processing a state-mutating POST request to prevent duplicate submissions.
-
-#### Scenario: Successful POST submission
-- **WHEN** user successfully submits a POST form (e.g., creating an event)
-- **THEN** the server responds with an HTTP 302 Redirect to a relevant view page
+## ADDED Requirements
 
 ### Requirement: Calendar Widget for Date/Time Fields
 The system SHALL use Flatpickr as a visual calendar/datetime picker on all date/time input fields in event creation and editing forms. Flatpickr SHALL be configured with `enableTime: true` and `dateFormat: "Y-m-d\TH:i"` to produce ISO 8601 datetime strings compatible with Django's `parse_datetime`. The underlying `<input>` element SHALL retain `type="datetime-local"` as a fallback if Flatpickr fails to load.

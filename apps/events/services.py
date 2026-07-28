@@ -1,10 +1,22 @@
+from datetime import timedelta
+from django.utils import timezone
 from .models import Event, Favorite
 
 
 def create_event(
     title: str, description: str, date, location: str, category, creator
 ) -> Event:
-    """Creates a new Event record."""
+    """Creates a new Event record, with time-window deduplication."""
+    time_threshold = timezone.now() - timedelta(seconds=5)
+    existing = Event.objects.filter(
+        title=title,
+        creator=creator,
+        date=date,
+        created_at__gte=time_threshold,
+    ).first()
+    if existing:
+        return existing
+
     return Event.objects.create(
         title=title,
         description=description,

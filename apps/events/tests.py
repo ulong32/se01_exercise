@@ -485,3 +485,64 @@ def test_event_detail_context_is_favorited(client, creator, event):
     res_auth2 = client.get(url)
     assert res_auth2.status_code == 200
     assert res_auth2.context["is_favorited"] is True
+
+
+@pytest.mark.django_db
+def test_create_event_deduplication_within_window(creator, category):
+    from apps.events.services import create_event
+    now = timezone.now()
+    event1 = create_event(
+        title="Dedup Event",
+        description="Description 1",
+        date=now + timedelta(days=1),
+        location="Location 1",
+        category=category,
+        creator=creator,
+    )
+    event2 = create_event(
+        title="Dedup Event",
+        description="Description 2",
+        date=now + timedelta(days=1),
+        location="Location 2",
+        category=category,
+        creator=creator,
+    )
+    assert event1.id == event2.id
+    assert Event.objects.filter(title="Dedup Event").count() == 1
+
+
+@pytest.mark.django_db
+def test_create_event_no_dedup_outside_window_or_diff_user(creator, other_user, category):
+    from unittest.mock import patch
+    from apps.events.services import create_event
+    now = timezone.now()
+    event1 = create_event(
+        title="Dedup Event 2",
+        description="Description 1",
+        date=now + timedelta(days=1),
+        location="Location 1",
+        category=category,
+        creator=creator,
+    )
+    event_other = create_event(
+        title="Dedup Event 2",
+        description="Description Other",
+        date=now + timedelta(days=1),
+        location="Location Other",
+        category=category,
+        creator=other_user,
+    )
+    assert event1.id != event_other.id
+    assert Event.objects.filter(title="Dedup Event 2").count() == 2
+
+    with patch("django.utils.timezone.now", return_value=now + timedelta(seconds=6)):
+        event_after = create_event(
+            title="Dedup Event 2",
+            description="Description After",
+            date=now + timedelta(days=1),
+            location="Location After",
+            category=category,
+            creator=creator,
+        )
+        assert event1.id != event_after.id
+        assert Event.objects.filter(title="Dedup Event 2").count() == 3

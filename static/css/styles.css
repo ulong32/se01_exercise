@@ -728,3 +728,37 @@ textarea.form-control {
 .favorite-btn.is-favorited {
     color: #e53e3e;
 }
+
+/* Flatpickr Customizations */
+.flatpickr-calendar {
+    font-family: inherit;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Submit Button Loading State */
+.btn.is-submitting {
+    opacity: 0.6;
+    cursor: not-allowed;
+    position: relative;
+    pointer-events: none;
+}
+
+.btn.is-submitting::before {
+    content: "";
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner 0.75s linear infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}

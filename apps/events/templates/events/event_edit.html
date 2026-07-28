@@ -6,7 +6,7 @@
     <section class="form-container" aria-labelledby="edit-heading">
         <div class="form-card">
             <h1 id="edit-heading" class="form-title">Edit Event</h1>
-            <form method="POST" action="{% url 'events:event_edit' event.id %}">
+            <form method="POST" action="{% url 'events:event_edit' event.id %}" data-submit-protect>
                 {% csrf_token %}
                 
                 <div class="form-group">
@@ -45,4 +45,15 @@
             </form>
         </div>
     </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof flatpickr !== "undefined") {
+                flatpickr("#date", {
+                    enableTime: true,
+                    dateFormat: "Y-m-d\\TH:i",
+                    time_24hr: true
+                });
+            }
+        });
+    </script>
 {% endblock %}
