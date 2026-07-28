@@ -1,0 +1,12 @@
+{% if request.user.is_authenticated %}
+<button type="button"
+        class="favorite-btn{% if is_favorited %} is-favorited{% endif %}"
+        hx-post="{% url 'events:event_toggle_favorite' event.id %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        aria-label="{% if is_favorited %}Remove from favorites{% else %}Add to favorites{% endif %}"
+        title="{% if is_favorited %}Remove from favorites{% else %}Add to favorites{% endif %}">
+    {% if is_favorited %}♥{% else %}♡{% endif %}
+</button>
+{% endif %}

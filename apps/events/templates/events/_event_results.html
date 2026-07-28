@@ -3,9 +3,17 @@
         {% for event in page_obj %}
         <li>
             <article class="event-item{% if event.date < now %} past-event{% endif %}">
-                <div>
+                <div class="event-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <h2 class="event-card-title"><a href="{% url 'events:event_detail' event_id=event.id %}" class="stretched-link">{{ event.title }}</a></h2>
-
+                    {% if request.user.is_authenticated %}
+                        {% if event.id in favorited_ids %}
+                            {% include "events/_favorite_button.html" with is_favorited=True %}
+                        {% else %}
+                            {% include "events/_favorite_button.html" with is_favorited=False %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div>
                     <p>{{ event.description|truncatewords:20 }}</p>
                 </div>
                 <div class="event-meta">

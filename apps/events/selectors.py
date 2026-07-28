@@ -3,7 +3,7 @@ from datetime import date
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from .models import Event
+from .models import Event, Favorite
 
 
 def get_events(
@@ -33,3 +33,17 @@ def get_events(
         events = events.filter(location__icontains=location)
 
     return events
+
+
+def get_user_favorites(user) -> QuerySet[Event]:
+    """Retrieves events favorited by the user, ordered by most recently favorited."""
+    if not user.is_authenticated:
+        return Event.objects.none()
+    return Event.objects.filter(favorites__user=user).order_by("-favorites__created_at")
+
+
+def get_favorited_event_ids(user) -> set[int]:
+    """Retrieves a set of event IDs favorited by the user."""
+    if not user.is_authenticated:
+        return set()
+    return set(Favorite.objects.filter(user=user).values_list("event_id", flat=True))

@@ -2,11 +2,17 @@ from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.events.models import Category, Event
-from apps.events.selectors import get_events
+from apps.events.models import Category, Event, Favorite
+from apps.events.selectors import (
+    get_events,
+    get_favorited_event_ids,
+    get_user_favorites,
+)
+from apps.events.services import toggle_favorite
 
 User = get_user_model()
 
@@ -375,3 +381,107 @@ def test_pagination_htmx(client, many_events):
     assert b"Paginated Event 12" in res.content
     assert b"pagination" in res.content
     assert b"&laquo; Previous" in res.content
+
+
+@pytest.mark.django_db
+def test_toggle_favorite_service(creator, event):
+    assert toggle_favorite(creator, event) is True
+    assert Favorite.objects.filter(user=creator, event=event).exists()
+    assert toggle_favorite(creator, event) is False
+    assert not Favorite.objects.filter(user=creator, event=event).exists()
+
+
+@pytest.mark.django_db
+def test_get_user_favorites_selector(creator, event, category):
+    event2 = Event.objects.create(
+        title="Second Event",
+        description="Second Description",
+        date=timezone.now() + timedelta(days=2),
+        location="Location 2",
+        category=category,
+        creator=creator,
+    )
+    toggle_favorite(creator, event)
+    toggle_favorite(creator, event2)
+    favs = list(get_user_favorites(creator))
+    assert len(favs) == 2
+    assert favs[0] == event2
+    assert favs[1] == event
+
+
+@pytest.mark.django_db
+def test_get_favorited_event_ids_selector(creator, event):
+    assert get_favorited_event_ids(creator) == set()
+    toggle_favorite(creator, event)
+    assert get_favorited_event_ids(creator) == {event.id}
+    assert get_favorited_event_ids(AnonymousUser()) == set()
+
+
+@pytest.mark.django_db
+def test_toggle_favorite_endpoint(client, creator, event):
+    url = reverse("events:event_toggle_favorite", args=[event.id])
+    res_unauth = client.post(url)
+    assert res_unauth.status_code == 302
+    assert "/users/login/" in res_unauth.url
+
+    client.force_login(creator)
+    res_get = client.get(url)
+    assert res_get.status_code == 405
+
+    res_post1 = client.post(url)
+    assert res_post1.status_code == 200
+    assert Favorite.objects.filter(user=creator, event=event).exists()
+    assert b"is-favorited" in res_post1.content
+
+    res_post2 = client.post(url)
+    assert res_post2.status_code == 200
+    assert not Favorite.objects.filter(user=creator, event=event).exists()
+
+
+@pytest.mark.django_db
+def test_event_saved_view(client, creator, event):
+    url = reverse("events:event_saved")
+    res_unauth = client.get(url)
+    assert res_unauth.status_code == 302
+
+    client.force_login(creator)
+    res_empty = client.get(url)
+    assert res_empty.status_code == 200
+    assert b"You have no saved events yet." in res_empty.content
+
+    toggle_favorite(creator, event)
+    res_saved = client.get(url)
+    assert res_saved.status_code == 200
+    assert event.title.encode() in res_saved.content
+
+
+@pytest.mark.django_db
+def test_event_list_context_favorited_ids(client, creator, event):
+    url = reverse("events:event_list")
+    res_unauth = client.get(url)
+    assert res_unauth.status_code == 200
+    assert res_unauth.context["favorited_ids"] == set()
+
+    client.force_login(creator)
+    toggle_favorite(creator, event)
+    res_auth = client.get(url)
+    assert res_auth.status_code == 200
+    assert res_auth.context["favorited_ids"] == {event.id}
+
+
+@pytest.mark.django_db
+def test_event_detail_context_is_favorited(client, creator, event):
+    url = reverse("events:event_detail", args=[event.id])
+    res_unauth = client.get(url)
+    assert res_unauth.status_code == 200
+    assert res_unauth.context["is_favorited"] is False
+
+    client.force_login(creator)
+    res_auth1 = client.get(url)
+    assert res_auth1.status_code == 200
+    assert res_auth1.context["is_favorited"] is False
+
+    toggle_favorite(creator, event)
+    res_auth2 = client.get(url)
+    assert res_auth2.status_code == 200
+    assert res_auth2.context["is_favorited"] is True

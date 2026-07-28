@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Event
+from .models import Category, Event, Favorite
 
 
 @admin.register(Category)
@@ -15,3 +15,10 @@ class EventModelAdmin(admin.ModelAdmin):
     list_filter = ("category", "date")
     search_fields = ("title", "description", "location")
     raw_id_fields = ("creator",)
+
+
+@admin.register(Favorite)
+class FavoriteModelAdmin(admin.ModelAdmin):
+    list_display = ("user", "event", "created_at")
+    search_fields = ("user__username", "event__title")
+    raw_id_fields = ("user", "event")
