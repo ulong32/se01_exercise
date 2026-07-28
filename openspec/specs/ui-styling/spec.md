@@ -59,3 +59,29 @@ The system SHALL display the event list in a structured format that is readable 
 #### Scenario: Event list on desktop
 - **WHEN** the event list page is viewed on a desktop viewport
 - **THEN** each event is displayed with the title, date, and location visible in a structured layout
+
+### Requirement: Past Event Visual Distinction
+The system SHALL style past events with a distinct grayed-out visual appearance using the CSS class `past-event`. The CSS rule SHALL apply `opacity: 0.6` and `filter: grayscale(60%)`. Hover effects on past event cards SHALL be muted compared to upcoming events (no upward lift animation, standard shadow).
+
+#### Scenario: Past event styling rules
+- **WHEN** an element has the class `past-event` applied
+- **THEN** it renders with 60% opacity and 60% grayscale filter
+
+#### Scenario: Past event hover styling
+- **WHEN** a user hovers over a `.past-event` card
+- **THEN** the card does NOT lift upwards (`transform: none`) and maintains a subdued border and shadow
+
+### Requirement: Pagination Navigation Styling
+The system SHALL style the pagination navigation controls using the `.pagination` and `.pagination-link` classes in `static/css/styles.css`. The container SHALL use a centered Flexbox layout with wrapping and gap spacing. Individual page links SHALL be pill-shaped with consistent padding and transitions. The active page link (`.pagination-link.active`) SHALL use the brand accent gradient background with bold white text. Disabled links (`.pagination-link.disabled`) SHALL have reduced opacity (`0.4`) and a not-allowed cursor.
+
+#### Scenario: Pagination container layout
+- **WHEN** the `.pagination` container is rendered
+- **THEN** it displays its children centered horizontally with a gap between elements and wrapping on small screens
+
+#### Scenario: Active page number styling
+- **WHEN** the current page number is rendered with class `.pagination-link.active`
+- **THEN** it displays with the accent gradient background, no border, and bold white text
+
+#### Scenario: Disabled pagination link styling
+- **WHEN** a Previous or Next link is disabled at the boundaries of the page range
+- **THEN** it renders with 0.4 opacity and `cursor: not-allowed` without hover color changes
