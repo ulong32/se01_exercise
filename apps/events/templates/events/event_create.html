@@ -6,7 +6,7 @@
     <section class="form-container" aria-labelledby="create-heading">
         <div class="form-card">
             <h1 id="create-heading" class="form-title">Create New Event</h1>
-            <form method="POST" action="{% url 'events:event_create' %}">
+            <form method="POST" action="{% url 'events:event_create' %}" data-submit-protect>
                 {% csrf_token %}
                 
                 <div class="form-group">
@@ -44,4 +44,15 @@
             </form>
         </div>
     </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof flatpickr !== "undefined") {
+                flatpickr("#date", {
+                    enableTime: true,
+                    dateFormat: "Y-m-d\\TH:i",
+                    time_24hr: true
+                });
+            }
+        });
+    </script>
 {% endblock %}
