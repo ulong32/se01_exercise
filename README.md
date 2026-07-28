@@ -10,13 +10,6 @@ A web application that allows users to create, browse, search, and manage local 
 * Browsing & Pagination: Paginated event lists with past events hidden or visually grayed out.
 * Rich UI: Asynchronous dynamic search updates without page reloads, visual calendar widgets, and submit protection to prevent duplicate entries.
 
-## Unimplemented Features (未実装の機能)
-
-While listed in the overview above, the following advanced capabilities are currently out of scope and **not yet implemented** in the codebase:
-* **Advanced Filtering**: Filtering events by date, category, and location (currently, only title substring search is implemented).
-* **Pagination & Past Events**: Paginated event lists and hiding/graying out past events.
-* **Rich UI Elements**: Visual calendar widgets and submit protection against duplicate form submissions.
-* **Saved Events**: The optional `favorites` junction table and user bookmarks functionality.
 
 ## Development Environment
 
